@@ -1,4 +1,4 @@
-Welcome to the cost-reduction-project wiki!
+
 
 ##  make prometheus to scrape node labels > makes kube-state-metrics to collect node labels 
 
