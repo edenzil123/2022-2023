@@ -15,20 +15,20 @@ spec:
   userData: |
     [[settings.container-registry.mirrors]]
     registry = "quay.io"
-    endpoint = ["http://registry-cache-harbor-core.node-management.svc.cluster.local/v2/quay.io"]
+    endpoint = ["http://<name of the core svc>.<namespace>.svc.cluster.local/v2/<name of the proxy project in harbor>"]
 
 
     [[settings.container-registry.mirrors]]
     registry = "docker.io"
-    endpoint = ["http://registry-cache-harbor-core.node-management.svc.cluster.local/v2/geo"]
+    endpoint = ["http://<name of the core svc>.<namespace>.svc.cluster.local/v2/<name of the proxy project in harbor>"]
 
     [[settings.container-registry.credentials]]
-    registry = "registry-cache-harbor-core.node-management.svc.cluster.local"
+    registry = "<name of the core svc>.<namespace>.svc.cluster.local"
     auth = "username:password in base64"
 
 
     [settings.network]
     hosts = [
       ["10.100.151.4", ["registry-cache-harbor-core.node-management.svc.cluster.local"]]
-    ]
+    ] # you need to add a 
  ```
