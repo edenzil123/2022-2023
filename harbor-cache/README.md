@@ -5,7 +5,7 @@ karpenter will provision a bottlerocket node with userdata , that will configure
 *and* containerd will use the private kubernetes network.
 
 **awsnodetemplate.yaml**
-```
+```yaml
 apiVersion: karpenter.k8s.aws/v1alpha1
 kind: AWSNodeTemplate
 metadata:
