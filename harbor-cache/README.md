@@ -24,7 +24,7 @@ spec:
 
     [[settings.container-registry.credentials]]
     registry = "registry-cache-harbor-core.node-management.svc.cluster.local"
-    auth = "YWRtaW46YWRtaW4="
+    auth = "username:password in base64"
 
 
     [settings.network]
