@@ -1,6 +1,7 @@
 **karpenter spot interruption queue - deployed with ack controllers**
 
-use case: If enabled, Karpenter will watch for upcoming involuntary interruption events that could affect your nodes (health events, spot interruption, etc.)
+use case: you want karpenter to watch for spot interruptions and get a notice 2 minutes before the spot is lost.  
+If enabled, Karpenter will watch for upcoming involuntary interruption events that could affect your nodes (health events, spot interruption, etc.)
 and will cordon, drain, and terminate the node(s) ahead of the event to reduce workload disruption. For Spot interruptions, the provisioner will start a new machine as soon as it sees the Spot interruption warning. Spot interruptions have a 2 minute notice before Amazon EC2 reclaims the instance. 
 
 to "catch" the spot interruptions all that karpenter need is the sqs queue *name*, all the rest you need to deploy by yourself. 
@@ -177,5 +178,11 @@ resource "aws_iam_policy" "karpenter-sqs" {
 
 ```
 
-
-
+Finally, add the "aws.interruptionQueueName" setting to karpnter, i installed it with helm so i added ti the values.yaml file this:
+```yaml
+settings:
+  aws:
+    interruptionQueueName: "sqs"
+```
+check in the logs of karpenter's pod if he find the queue anddd
+Thats it! good luck.
