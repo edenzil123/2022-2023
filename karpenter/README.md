@@ -49,7 +49,7 @@ module "ack-sqs-irsa_role" {
 ################## IAM Roles for ack eventbridge #################
 data "aws_iam_policy" "ack-eventbridge" {
   name = "AmazonEventBridgeFullAccess"
-}
+}Harbor API create proxy cache project · goharbor/harbor · Discussion #14786
 
 
 module "ack-eventbridge-irsa_role" {
@@ -81,4 +81,64 @@ kubectl annotate serviceaccount ack-eventbridge-controller eks.amazonaws.com/rol
 kubectl annotate serviceaccount ack-sqs-controller eks.amazonaws.com/role-arn=arn:aws:iam::<ACOUNT ID>:role/ack-sqs
 ```
 
+After you succesfully installed the ack's and made sure there pods are running you can now configure the sqs queue and the eventbridge rule. 
+here are the yamls:
 
+```yaml
+apiVersion: sqs.services.k8s.aws/v1alpha1
+kind: Queue
+metadata:
+  name: sqs
+  namespace: aws-controllers
+spec:
+  queueName: sqs
+  policy: | 
+    {
+      "Version": "2012-10-17",
+      "Id": "__default_policy_ID",
+      "Statement": [
+        {
+          "Sid": "__owner_statement",
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::${ACCOUNT-ID}:root"
+          },
+          "Action": "SQS:*",
+          "Resource": "arn:aws:sqs:us-east-1:${ACCOUNT-ID}:sqs"
+        },
+        {
+          "Sid": "AWSEvents_spot-interruption",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "events.amazonaws.com"
+          },
+          "Action": "sqs:SendMessage",
+          "Resource": "arn:aws:sqs:us-east-1:${ACCOUNT-ID}:sqs",
+          "Condition": {
+            "ArnEquals": {
+              "aws:SourceArn": "arn:aws:events:us-east-1:${ACCOUNT-ID}:rule/spot-interruption"
+            }
+          }
+        }
+      ]
+    }
+ ###################################### eventBridge rule ##################################
+apiVersion: eventbridge.services.k8s.aws/v1alpha1
+kind: Rule
+metadata:
+  name: spot-interruption
+  namespace: aws-controllers
+spec:
+  name: spot-interruption
+  targets:
+  - arn: arn:aws:sqs:us-east-1:${ACCOUNT-ID}:sqs
+    id: sqs
+  eventPattern: | 
+    {
+      "source": ["aws.ec2"],
+      "detail-type": ["EC2 Spot Instance Interruption Warning"]
+    }
+ 
+```
+In the queue configuration you have to give permmisions to the eventbridge rule to send messeges to him.
+And in the eventBridge rule set the sqs queue as the target. 
