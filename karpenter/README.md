@@ -74,4 +74,11 @@ module "ack-eventbridge-irsa_role" {
 ```
 MAKE SURE THE NAME OF THE SERVICE ACCOUNT IN THE FILED `namespace_service_accounts` IS THE ONE THE ACK CONTROLLER IS USING.  
 
+Annotate the service accounts:
+
+```bash
+kubectl annotate serviceaccount ack-eventbridge-controller eks.amazonaws.com/role-arn=arn:aws:iam::<ACOUNT ID>:role/ack-eventbridge
+kubectl annotate serviceaccount ack-sqs-controller eks.amazonaws.com/role-arn=arn:aws:iam::<ACOUNT ID>:role/ack-sqs
+```
+
 
