@@ -5,9 +5,9 @@ and will cordon, drain, and terminate the node(s) ahead of the event to reduce w
 
 to "catch" the spot interruptions all that karpenter need is the sqs queue *name*, all the rest you need to deploy by yourself. 
 the rest is eventBridge rule and sqs queue. in this tutorial we you will deploy it with ack controllers
+The eventBridge rule will watch for AWS "EC2 Spot Instance Interruption Warning" and send it to the sqs queue.
 
-
-**installing the ack controllers**
+**Installing the ack controllers**
 ```
 helm install eventbridge-controller oci://public.ecr.aws/aws-controllers-k8s/eventbridge-chart
 
@@ -81,6 +81,8 @@ kubectl annotate serviceaccount ack-eventbridge-controller eks.amazonaws.com/rol
 kubectl annotate serviceaccount ack-sqs-controller eks.amazonaws.com/role-arn=arn:aws:iam::<ACOUNT ID>:role/ack-sqs
 ```
 
+**Deploying the resources**
+
 After you succesfully installed the ack's and made sure there pods are running you can now configure the sqs queue and the eventbridge rule. 
 here are the yamls:
 
@@ -142,3 +144,38 @@ spec:
 ```
 In the queue configuration you have to give permmisions to the eventbridge rule to send messeges to him.
 And in the eventBridge rule set the sqs queue as the target. 
+
+**Karpenter's side configurations**
+
+Now you need to add an IAM policy to karpenter's service account permmisions to access and read the sqs queue.
+I added it with terraform:
+
+```terraform
+
+resource "aws_iam_policy" "karpenter-sqs" {
+  name        = "${data.aws_eks_cluster.cluster.id}-karpenter-sqs"
+  description = "SQS permissions added to karpenter policy to detect spot interruptions"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "SQS:DeleteMessage",
+          "SQS:ReceiveMessage",
+          "SQS:GetQueueAttributes",
+          "SQS:GetQueueUrl"
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:sqs:${var.region}:${data.aws_organizations_organization.org.accounts[0].id}:sqs"
+      }   
+    ]
+  })
+
+  tags = data.aws_eks_cluster.cluster.tags
+}
+
+```
+
+
+
