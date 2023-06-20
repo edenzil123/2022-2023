@@ -186,3 +186,13 @@ settings:
 ```
 check in the logs of karpenter's pod if he find the queue anddd
 Thats it! good luck.
+
+
+
+כל instance של t3.medium עולה 56 דלר בחודש
+
+t3.small עולה חצי
+
+אפשר להוריד עוד יותר אם נקנה instance לשנה
+
+נראלי שווה להקטין בשביל שרק קרפנטר ירוץ על הנוד
