@@ -92,30 +92,6 @@ resource "aws_iam_instance_profile" "karpenter-profile" {
 }
 ########################################### deploy karpenter related IAM policies #########################################
 
-#resource "aws_iam_role" "karpenter-nodes" {
-#  name = "KarpenterControllerRole-${var.cluster_name}"
-#
-#  assume_role_policy = <<POLICY
-#{
-#    "Version": "2012-10-17",
-#    "Statement": [
-#        {
-#            "Effect": "Allow",
-#            "Principal": {
-#                "Federated": "arn:aws:iam::${var.aws_account}:oidc-provider/https://oidc.eks.eu-central-1.amazonaws.com/id/5036107776419FDF478D4E9B2B3A875C"
-#            },
-#            "Action": "sts:AssumeRoleWithWebIdentity",
-#            "Condition": {
-#                "StringEquals": {
-#                    "https://oidc.eks.eu-central-1.amazonaws.com/id/5036107776419FDF478D4E9B2B3A875C:aud": "sts.amazonaws.com",
-#                    "https://oidc.eks.eu-central-1.amazonaws.com/id/5036107776419FDF478D4E9B2B3A875C:sub": "system:serviceaccount:karpenter:karpenter"
-#                }
-#            }
-#        }
-#    ]
-#}
-#POLICY
-#}
 
 resource "aws_iam_role_policy" "karpenter_controller" {
   name = "karpenter-policy-${var.cluster_name}"
