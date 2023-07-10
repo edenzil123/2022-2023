@@ -99,3 +99,18 @@ resource "aws_cloudwatch_event_rule" "eventbridge-2" {
 }
 EOF
 }
+
+resource "aws_cloudwatch_event_target" "eventbridge-1" {
+  rule      = aws_cloudwatch_event_rule.eventbridge-1.name
+  arn       = aws_sqs_queue.infinit.arn
+}
+
+resource "aws_cloudwatch_event_target" "eventbridge-2" {
+  rule      = aws_cloudwatch_event_rule.eventbridge-2.name
+  arn       = aws_sqs_queue.infinit.arn
+}
+
+resource "aws_cloudwatch_event_target" "eventbridge-3" {
+  rule      = aws_cloudwatch_event_rule.eventbridge-3.name
+  arn       = aws_sqs_queue.infinit.arn
+}
