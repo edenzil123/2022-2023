@@ -39,3 +39,7 @@
           {{end}}
           ]
         }]
+
+
+You can’t call arbitrary Go methods, but you do have access to sprig, so I used this:
+{{ (trimAll ".git" .app.spec.source.repoURL) }}/-/commit/{{ .app.status.sync.revision }}
